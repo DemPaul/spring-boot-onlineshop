@@ -5,7 +5,6 @@ import com.spring.onlineshop.model.Basket;
 import com.spring.onlineshop.model.Code;
 import com.spring.onlineshop.model.Order;
 import com.spring.onlineshop.model.User;
-import com.spring.onlineshop.service.AddressService;
 import com.spring.onlineshop.service.BasketService;
 import com.spring.onlineshop.service.CodeService;
 import com.spring.onlineshop.service.MailService;
@@ -30,17 +29,14 @@ public class OrderController {
     private BasketService basketService;
     private MailService mailService;
     private CodeService codeService;
-    private AddressService addressService;
     private OrderService orderService;
 
     @Autowired
     public OrderController(BasketService basketService, MailService mailService,
-                           CodeService codeService, AddressService addressService,
-                           OrderService orderService) {
+                           CodeService codeService, OrderService orderService) {
         this.basketService = basketService;
         this.mailService = mailService;
         this.codeService = codeService;
-        this.addressService = addressService;
         this.orderService = orderService;
     }
 
@@ -90,14 +86,12 @@ public class OrderController {
             Optional<Basket> basketOptional = basketService.getLatestBasketOfUser(user);
             if (basketOptional.isPresent()) {
                 Basket basket = basketOptional.get();
-                String stringCode = ConfirmCodeGenerator.generateCode();
-                mailService.sendConfirmCode(new Code(stringCode, email));
-                codeService.addCode(new Code(stringCode, email));
-                Address address = new Address(country, city, street, houseNumber, user);
-                addressService.addAddress(address);
+                Code code = new Code(ConfirmCodeGenerator.generateCode(), email);
+                mailService.sendConfirmCode(code);
+                codeService.addCode(code);
                 Order order = new Order(codeService.getLatestCodeOfEmail(email).get(),
                         basket, name, email, phoneNumber,
-                        addressService.getLatestAddressOfUser(user).get());
+                        new Address(country, city, street, houseNumber));
                 basketService.lockBasket(basket);
                 orderService.addOrder(order);
                 return "code";

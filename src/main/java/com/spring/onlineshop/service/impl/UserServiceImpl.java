@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     public void addUser(User user) {
         try {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            userJpaRepository.save(user);
+            userJpaRepository.saveAndFlush(user);
             logger.info("User " + user + " added to the DataBase");
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase, " +
@@ -89,12 +89,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changeUser(User oldUser, User newUser) {
         try {
-            newUser.setPassword(bCryptPasswordEncoder.encode(newUser.getPassword()));
-            userJpaRepository.updateUserById(
-                    newUser.getEmail(),
-                    newUser.getPassword(),
-                    newUser.getRole(),
-                    oldUser.getId());
+            oldUser.setEmail(newUser.getEmail());
+            oldUser.setPassword(bCryptPasswordEncoder.encode(newUser.getPassword()));
+            oldUser.setRole(newUser.getRole());
+            userJpaRepository.saveAndFlush(oldUser);
             logger.info("User " + oldUser + " changed in DataBase to " + newUser);
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase", e);

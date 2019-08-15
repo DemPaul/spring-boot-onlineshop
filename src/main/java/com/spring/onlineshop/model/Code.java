@@ -25,7 +25,7 @@ public class Code {
     @Column(name = "email")
     private String email;
 
-    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval=true, mappedBy = "code")
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "code")
     private Order order;
 
     public Code() {

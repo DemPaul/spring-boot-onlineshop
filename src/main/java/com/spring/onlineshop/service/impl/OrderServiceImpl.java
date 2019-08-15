@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void addOrder(Order order) {
         try {
-            orderJpaRepository.save(order);
+            orderJpaRepository.saveAndFlush(order);
             logger.info("Order " + order + " added to the DataBase");
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase, " +
@@ -39,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Optional<Order> getLatestOrderOfUser(User user) {
         try {
-            return orderJpaRepository.getLatestOrderOfUser(user).get(0);
+            return orderJpaRepository.findLatestOrderByUser(user).get(0);
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase", e);
         }
@@ -50,7 +50,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void confirmOrder(Order order) {
         try {
-            orderJpaRepository.confirmOrder(order);
+            order.setConfirmed(true);
+            orderJpaRepository.saveAndFlush(order);
             logger.info("Order " + order.toString() + " is confirmed " +
                     "by the user (id=" + order.getBasket().getUser().getId() + ")");
         } catch (Exception e) {

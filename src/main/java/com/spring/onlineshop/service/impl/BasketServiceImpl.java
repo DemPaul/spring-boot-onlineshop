@@ -28,7 +28,7 @@ public class BasketServiceImpl implements BasketService {
     @Override
     public void addBasket(Basket basket) {
         try {
-            basketJpaRepository.save(basket);
+            basketJpaRepository.saveAndFlush(basket);
             logger.info("Basket " + basket + " added to the DataBase");
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase, " +
@@ -40,9 +40,7 @@ public class BasketServiceImpl implements BasketService {
     @Override
     public Optional<Basket> getLatestBasketOfUser(User user) {
         try {
-            return basketJpaRepository.findLatestBasketOfUser(user).get(0);
-        } catch (IndexOutOfBoundsException e) {
-            logger.error("Problem in working with the DataBase");
+            return basketJpaRepository.findFirstByUserAndLockedIsFalseOrderByIdDesc(user);
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase", e);
         }
@@ -53,7 +51,8 @@ public class BasketServiceImpl implements BasketService {
     @Override
     public void addProductToBasket(Product product, Basket basket) {
         try {
-            basketJpaRepository.addProductToBasket(product.getId(), basket.getId());
+            basket.getProductBasket().add(product);
+            basketJpaRepository.saveAndFlush(basket);
             logger.info("Product (id=" + product.getId() +
                     ") is added to basket (id=" + basket.getId() +
                     ") by the user (id=" + basket.getUser().getId() + ")");
@@ -68,7 +67,7 @@ public class BasketServiceImpl implements BasketService {
     public void lockBasket(Basket basket) {
         try {
             basket.setLocked(true);
-            basketJpaRepository.lockBasket(basket.isLocked(), basket);
+            basketJpaRepository.saveAndFlush(basket);
             logger.info("Basket " + basket.toString() + " is locked " +
                     "by the user (id=" + basket.getUser().getId() + ")");
         } catch (Exception e) {

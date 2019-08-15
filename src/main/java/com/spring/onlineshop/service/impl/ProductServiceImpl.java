@@ -28,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void addProduct(Product product) {
         try {
-            productJpaRepository.save(product);
+            productJpaRepository.saveAndFlush(product);
             logger.info("Product " + product + " added to the DataBase");
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase, " +
@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getAll() {
         try {
-            return productJpaRepository.findAll();
+            return productJpaRepository.findAllByAvailableIsTrue();
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase", e);
         }
@@ -62,11 +62,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void changeProduct(Product oldProduct, Product newProduct) {
         try {
-            productJpaRepository.updateProductById(
-                    newProduct.getName(),
-                    newProduct.getDescription(),
-                    newProduct.getPrice(),
-                    oldProduct.getId());
+            oldProduct.setName(newProduct.getName());
+            oldProduct.setDescription(newProduct.getDescription());
+            oldProduct.setPrice(newProduct.getPrice());
+            productJpaRepository.saveAndFlush(oldProduct);
             logger.info("Product " + oldProduct + " changed in DataBase to " + newProduct);
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase", e);
@@ -78,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
     public void removeProduct(Product product) {
         try {
             product.setAvailable(false);
-            productJpaRepository.delete(product);
+            productJpaRepository.saveAndFlush(product);
             logger.info("Product " + product + " become unavailable");
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase, Product "

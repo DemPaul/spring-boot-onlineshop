@@ -34,10 +34,7 @@ public class User implements UserDetails {
     @Column(name = "role")
     private String role;
 
-    @OneToMany(cascade= CascadeType.MERGE, orphanRemoval=true, mappedBy="user")
-    private Collection<Address> addresses = new ArrayList<>();
-
-    @OneToMany(cascade= CascadeType.MERGE, orphanRemoval=true, mappedBy="user")
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, mappedBy = "user")
     private Collection<Basket> baskets = new ArrayList<>();
 
     public User() {
@@ -122,14 +119,6 @@ public class User implements UserDetails {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public Collection<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(Collection<Address> addresses) {
-        this.addresses = addresses;
     }
 
     public Collection<Basket> getBaskets() {

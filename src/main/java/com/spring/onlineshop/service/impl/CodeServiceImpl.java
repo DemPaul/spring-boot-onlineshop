@@ -26,7 +26,7 @@ public class CodeServiceImpl implements CodeService {
     @Override
     public void addCode(Code code) {
         try {
-            codeJpaRepository.save(code);
+            codeJpaRepository.saveAndFlush(code);
             logger.info("Code " + code + " added to the DataBase");
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase, " +

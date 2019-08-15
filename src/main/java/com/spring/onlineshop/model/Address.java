@@ -3,11 +3,10 @@ package com.spring.onlineshop.model;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.Objects;
@@ -33,11 +32,9 @@ public class Address {
     @Column(name = "houseNumber")
     private String houseNumber;
 
-    @ManyToOne
-    @JoinColumn(name="user_id")
-    private User user;
-
-    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval=true, mappedBy = "address")
+    @OneToOne(fetch = FetchType.LAZY, optional = false,
+            cascade = CascadeType.ALL, orphanRemoval = true,
+            mappedBy = "address")
     private Order order;
 
     public Address() {
@@ -45,21 +42,19 @@ public class Address {
     }
 
     public Address(long id, String country, String city,
-                   String street, String houseNumber, User user) {
+                   String street, String houseNumber) {
         this.id = id;
         this.country = country;
         this.city = city;
         this.street = street;
         this.houseNumber = houseNumber;
-        this.user = user;
     }
 
-    public Address(String country, String city, String street, String houseNumber, User user) {
+    public Address(String country, String city, String street, String houseNumber) {
         this.country = country;
         this.city = city;
         this.street = street;
         this.houseNumber = houseNumber;
-        this.user = user;
     }
 
     public Long getId() {
@@ -102,14 +97,6 @@ public class Address {
         this.houseNumber = houseNumber;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public Order getOrder() {
         return order;
     }
@@ -127,13 +114,12 @@ public class Address {
                 Objects.equals(country, address.country) &&
                 Objects.equals(city, address.city) &&
                 Objects.equals(street, address.street) &&
-                Objects.equals(houseNumber, address.houseNumber) &&
-                Objects.equals(user, address.user);
+                Objects.equals(houseNumber, address.houseNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, country, city, street, houseNumber, user);
+        return Objects.hash(id, country, city, street, houseNumber);
     }
 
     @Override
@@ -142,8 +128,7 @@ public class Address {
                 "country='" + country + '\'' +
                 ", city='" + city + '\'' +
                 ", street='" + street + '\'' +
-                ", houseNumber='" + houseNumber + '\'' +
-                ", userId=" + user.getId() +
+                ", houseNumber='" + houseNumber +
                 '}';
     }
 }
