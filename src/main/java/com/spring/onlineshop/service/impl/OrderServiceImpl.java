@@ -39,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Optional<Order> getLatestOrderOfUser(User user) {
         try {
-            return orderJpaRepository.findLatestOrderByUser(user).get(0);
+            return Optional.ofNullable(orderJpaRepository.findLatestOrderByUser(user).get(0));
         } catch (Exception e) {
             logger.error("Problem in working with the DataBase", e);
         }

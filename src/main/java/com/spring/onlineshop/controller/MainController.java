@@ -1,8 +1,6 @@
 package com.spring.onlineshop.controller;
 
-import com.spring.onlineshop.model.Product;
 import com.spring.onlineshop.model.User;
-import com.spring.onlineshop.service.ProductService;
 import com.spring.onlineshop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,19 +11,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.annotation.PostConstruct;
 import java.util.Objects;
 
 @Controller
 public class MainController {
 
     private UserService userService;
-    private ProductService productService;
 
     @Autowired
-    public MainController(UserService userService, ProductService productService) {
+    public MainController(UserService userService) {
         this.userService = userService;
-        this.productService = productService;
     }
 
     @RequestMapping(path = {"/"}, method = RequestMethod.GET)
@@ -80,21 +75,6 @@ public class MainController {
                 return "registration";
             }
         }
-    }
-
-    @PostConstruct
-    public void init() {
-        User admin = new User("admin@admin", "admin", "ROLE_ADMIN");
-        User user = new User("1@1", "1111", "ROLE_USER");
-        userService.addUser(admin);
-        userService.addUser(user);
-
-        Product product1 = new Product("Bread", "Black bread", 8.99);
-        Product product2 = new Product("Butter", "Classic butter", 9.99);
-        Product product3 = new Product("Knife", "Very sharp", 15.99);
-        productService.addProduct(product1);
-        productService.addProduct(product2);
-        productService.addProduct(product3);
     }
 
     private boolean isNullOrEmpty(String requestParameter) {
